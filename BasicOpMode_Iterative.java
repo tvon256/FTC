@@ -58,6 +58,7 @@ public class BasicOpMode_Iterative extends OpMode
 
     //Allow methods and variables from hardware class to be accessed
     Hardware robot = new Hardware();
+    Movement move = new Movement();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -92,6 +93,7 @@ public class BasicOpMode_Iterative extends OpMode
         // Setup a variable for each drive wheel to save power level for telemetry
         double leftPower;
         double rightPower;
+        double rawPower;
 
         // Choose to drive using either Tank Mode, or POV Mode
         // Comment out the method that's not used.  The default below is POV.
@@ -100,6 +102,7 @@ public class BasicOpMode_Iterative extends OpMode
         // - This uses basic math to combine motions and is easier to drive straight.
         double drive = -gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
+        rawPower = Range.clip(drive, -1, 1);
         leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
         rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
@@ -109,8 +112,7 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        robot.leftDrive.setPower(leftPower);
-        robot.rightDrive.setPower(rightPower);
+        move.forward(rawPower, 1);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
