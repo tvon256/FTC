@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,6 +10,7 @@ public class Hardware {
     /*Define hardware variables to be used in Opmodes*/
     public DcMotor  leftDrive   = null;
     public DcMotor  rightDrive  = null;
+    public BNO055IMU imu = null;
 
     /*Define variables that tells phone this class is a hardware class*/
     HardwareMap hwMap           =  null;
@@ -40,5 +42,6 @@ public class Hardware {
         //Define Servos
 
         //Define Sensors
+        imu = hwMap.get(BNO055IMU.class, "imu");    //must config as i2c port 0
     }
 }
