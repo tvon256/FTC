@@ -59,6 +59,7 @@ public class BasicOpMode_Iterative extends OpMode
     //Allow methods and variables from hardware class to be accessed
     Hardware robot = new Hardware();
     Movement move = new Movement();
+    AutoMove autoMove = new AutoMove();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -112,7 +113,7 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        move.forward(rawPower, 1);
+        autoMove.forward(rawPower, 1);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

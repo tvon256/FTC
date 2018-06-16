@@ -8,8 +8,4 @@ public class Movement {
 
     Hardware robot = new Hardware();
 
-    public void forward(double power, int direction){
-        robot.leftDrive.setPower(power*direction);
-        robot.rightDrive.setPower(power*direction);
-    }
 }
