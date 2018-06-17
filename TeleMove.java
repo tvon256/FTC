@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode;
+import java.lang.Math;
 
-/**
- * Created by Thomas on 6/16/2018.
- */
 
 public class TeleMove extends Movement {
+
+    public TeleMove(){
+
+    }
+
+    Hardware robot = new Hardware();
+
 }
