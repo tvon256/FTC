@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -56,6 +57,7 @@ public class BasicOpMode_Iterative extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
 
+
     //Allow methods and variables from hardware class to be accessed
     Hardware robot = new Hardware();
     Movement move = new Movement();
@@ -68,7 +70,14 @@ public class BasicOpMode_Iterative extends OpMode
     public void init() {
         //initialize hardware from hardware class (note: hardwareMap comes from extended class OpMode and stores hardware config from phone)
         robot.init(hardwareMap);
+        robot.leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        robot.rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        robot.leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        robot.rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
     }
 
     /*
@@ -76,6 +85,9 @@ public class BasicOpMode_Iterative extends OpMode
      */
     @Override
     public void init_loop() {
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.update();
     }
 
     /*
@@ -92,32 +104,34 @@ public class BasicOpMode_Iterative extends OpMode
     @Override
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
-        double rawPower;
+        double leftFrontPower;
+        double rightFrontPower;
+        double leftBackPower;
+        double rightBackPower;
 
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
+        double joy1LX = gamepad1.left_stick_x;
+        double joy1LY = -gamepad1.left_stick_y;     //we reverse this to get values that make sense
+        double joy1RX = gamepad1.right_stick_x;
+//        double joy1RY = gamepad1.right_stick_y;
+//        double joy2LX = gamepad2.left_stick_x;
+//        double joy2LY = gamepad2.left_stick_y;
+//        double joy2RX = gamepad2.right_stick_x;
+//        double joy2RY = gamepad2.right_stick_y;
 
-        // POV Mode uses left stick to go forward, and right stick to turn.
-        // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = -gamepad1.left_stick_y;
-        double turn  =  gamepad1.right_stick_x;
-        rawPower = Range.clip(drive, -1, 1);
-        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+        leftFrontPower = Range.clip(-joy1LY - joy1LX - joy1RX, -1, 1);
+        rightFrontPower = Range.clip(joy1LY - joy1LX - joy1RX, -1, 1);
+        leftBackPower = Range.clip(joy1LY + joy1LX - joy1RX, -1, 1);
+        rightBackPower = Range.clip(-joy1LY + joy1LX - joy1RX, -1, 1);
 
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-        // leftPower  = -gamepad1.left_stick_y ;
-        // rightPower = -gamepad1.right_stick_y ;
-
-        // Send calculated power to wheels
+        robot.leftFrontDrive.setPower(leftFrontPower);
+        robot.rightFrontDrive.setPower(rightFrontPower);
+        robot.leftBackDrive.setPower(leftBackPower);
+        robot.rightBackDrive.setPower(rightBackPower);
 
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Motors", "leftFront (%.2f), rightFront (%.2f), leftback (%.2f), rightBack (%.2f)", leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
     }
 
     /*
@@ -125,6 +139,10 @@ public class BasicOpMode_Iterative extends OpMode
      */
     @Override
     public void stop() {
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
     }
 
 }
