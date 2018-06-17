@@ -1,16 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoMove extends Movement {
 
@@ -37,8 +29,7 @@ public class AutoMove extends Movement {
                             double distance,
                             double angle, boolean opModeIsActive) {
 
-        int     newLeftTarget;
-        int     newRightTarget;
+        int newLeftFrontTarget, newRightFrontTarget, newLeftBackTarget, newRightBackTarget;
         int     moveCounts;
         double  max;
         double  error;
@@ -51,24 +42,32 @@ public class AutoMove extends Movement {
 
             // Determine new target position, and pass to motor controller
             moveCounts = (int)(distance * COUNTS_PER_INCH);
-            newLeftTarget = robot.leftDrive.getCurrentPosition() + moveCounts;
-            newRightTarget = robot.rightDrive.getCurrentPosition() + moveCounts;
+            newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + moveCounts;
+            newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + moveCounts;
+            newLeftBackTarget = robot.leftFrontDrive.getCurrentPosition() + moveCounts;
+            newRightBackTarget = robot.rightFrontDrive.getCurrentPosition() + moveCounts;
 
             // Set Target and Turn On RUN_TO_POSITION
-            robot.leftDrive.setTargetPosition(newLeftTarget);
-            robot.rightDrive.setTargetPosition(newRightTarget);
+            robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
+            robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
+            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
 
-            robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
             speed = Range.clip(Math.abs(speed), 0.0, 1.0);
-            robot.leftDrive.setPower(speed);
-            robot.rightDrive.setPower(speed);
+            robot.leftFrontDrive.setPower(speed);
+            robot.rightFrontDrive.setPower(speed);
+            robot.leftBackDrive.setPower(speed);
+            robot.rightBackDrive.setPower(speed);
 
-            // keep looping while we are still active, and BOTH motors are running.
+            // keep looping while we are still active, and ALL motors are running.
             while (opModeIsActive &&
-                    (robot.leftDrive.isBusy() && robot.rightDrive.isBusy())) {
+                    (robot.leftFrontDrive.isBusy() && robot.rightFrontDrive.isBusy() && robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -89,17 +88,23 @@ public class AutoMove extends Movement {
                     rightSpeed /= max;
                 }
 
-                robot.leftDrive.setPower(leftSpeed);
-                robot.rightDrive.setPower(rightSpeed);
+                robot.leftFrontDrive.setPower(leftSpeed);
+                robot.rightFrontDrive.setPower(rightSpeed);
+                robot.leftBackDrive.setPower(leftSpeed);
+                robot.rightBackDrive.setPower(rightSpeed);
             }
 
             // Stop all motion;
-            robot.leftDrive.setPower(0);
-            robot.rightDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -144,14 +149,18 @@ public class AutoMove extends Movement {
         }
 
         // Stop all motion;
-        robot.leftDrive.setPower(0);
-        robot.rightDrive.setPower(0);
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
     }
 
 
     public void forward(double power, int direction){
-        robot.leftDrive.setPower(power*direction);
-        robot.rightDrive.setPower(power*direction);
+        robot.leftFrontDrive.setPower(power*direction);
+        robot.rightFrontDrive.setPower(power*direction);
+        robot.leftBackDrive.setPower(power*direction);
+        robot.rightBackDrive.setPower(power*direction);
     }
 
 

@@ -58,8 +58,10 @@ public class Movement {
         }
 
         // Send desired speeds to motors.
-        robot.leftDrive.setPower(leftSpeed);
-        robot.rightDrive.setPower(rightSpeed);
+        robot.leftFrontDrive.setPower(leftSpeed);
+        robot.rightFrontDrive.setPower(rightSpeed);
+        robot.leftBackDrive.setPower(leftSpeed);
+        robot.rightBackDrive.setPower(rightSpeed);
 
 
         return onTarget;
